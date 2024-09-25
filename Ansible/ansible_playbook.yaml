@@ -1,0 +1,33 @@
+--- # these 3 hyphens indicate that it is a yaml file
+- name: Install and start nginx  # the single hyphen indicates start of playbook
+  hosts: all #list of host where the playbook needs to run
+  become: true #for become: true default user is root, we need not mention become_user: root 
+  become_user: root # become_user is used to select the user using whose privileges the tasks will run  
+
+  tasks:
+  - name: Install Nginx
+    shell: apt install nginx 
+  - name: Start Nginx
+    shell: systemctl start nginx
+
+
+####this playbook is good practice as it use apt and service, which are provided by ansible
+- name: start of second playbook
+  hosts: all
+  become: root
+  tasks:
+  - name: Install httpd
+    apt: # this is performing the same task as shell command in 1st playbook, it is provided by ansible, so better to use this, in case shell command changes
+      name: httpd           # module to be installed
+      state: present        # present means to install
+  - name: Start httpd
+    service:
+      name: httpd
+      state: started
+
+
+###when using roles, we mention tasks in roles and not here
+- name: Install and configure kubernetes master and slave servers
+  hosts: all
+  roles:
+    - role_name
